@@ -30,11 +30,11 @@ public class ChatMessageRedisServiceImpl implements ChatMessageRedisService {
     // ✅ Lưu tin nhắn vào Redis list
     @Override
     public void saveMessage(ChatMessageDTO message) {
-        if (message == null || message.getSessionId() == null) {
-            throw new IllegalArgumentException("Message and sessionId must not be null");
-        }
-        String key = CHAT_KEY_PREFIX + message.getSessionId();
-        redisTemplate.opsForList().rightPush(key, message);
+//        if (message == null || message.getSessionId() == null) {
+//            throw new IllegalArgumentException("Message and sessionId must not be null");
+//        }
+//        String key = CHAT_KEY_PREFIX + message.getSessionId();
+//        redisTemplate.opsForList().rightPush(key, message);
     }
 
     // ✅ Lấy toàn bộ lịch sử chat theo sessionId
@@ -79,11 +79,11 @@ public class ChatMessageRedisServiceImpl implements ChatMessageRedisService {
     }
 
     private void synchronizeChatSession(String redisKey, ChatMessageDTO message) {
-        LocalDateTime timestamp = message.getTimestamp() != null ? message.getTimestamp() : LocalDateTime.now();
-
-        chatCustomerServiceRepository.findByRedisSessionId(redisKey)
-                .ifPresentOrElse(session -> updateExistingSession(session, timestamp),
-                        () -> createNewSession(redisKey, timestamp));
+//        LocalDateTime timestamp = message.getTimestamp() != null ? message.getTimestamp() : LocalDateTime.now();
+//
+//        chatCustomerServiceRepository.findByRedisSessionId(redisKey)
+//                .ifPresentOrElse(session -> updateExistingSession(session, timestamp),
+//                        () -> createNewSession(redisKey, timestamp));
     }
 
     private void updateExistingSession(ChatCustomerService session, LocalDateTime timestamp) {
