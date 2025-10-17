@@ -116,4 +116,62 @@ public class ProductServiceImpl implements ProductService {
         return product;
     }
 
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductDTO> getProductsByStatus(ProductStatus status) {
+        return productRepository.findByStatus(status).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductDTO> getProductsByCategory(Long categoryId) {
+        return productRepository.findByCategoryId(categoryId).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductDTO> searchProductsByName(String name) {
+        return productRepository.searchByName(name).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductDTO> getProductsByPriceRange(Double minPrice, Double maxPrice) {
+        return productRepository.findByPriceRange(minPrice, maxPrice).stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductDTO> getAvailableProducts() {
+        return productRepository.findAvailableProducts().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductDTO> getOutOfStockProducts() {
+        return productRepository.findOutOfStockProducts().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateProductQuantity(Long productId, Long quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        product.setQuantity(quantity);
+        productRepository.save(product);
+    }
+
+
 }

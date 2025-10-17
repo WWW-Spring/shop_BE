@@ -14,4 +14,13 @@ public interface ProductService {
     ProductDTO getProductById(Long id);
     List<ProductDTO> getAllProducts();
 
+
+    List<ProductDTO> getProductsByStatus(ProductStatus status);
+    List<ProductDTO> getProductsByCategory(Long categoryId);
+    List<ProductDTO> searchProductsByName(String name);
+    List<ProductDTO> getProductsByPriceRange(Double minPrice, Double maxPrice);
+    List<ProductDTO> getAvailableProducts();
+    List<ProductDTO> getOutOfStockProducts();
+    void updateProductQuantity(Long productId, Long quantity);
+
 }
