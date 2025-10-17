@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ChatCustomerServiceRepository extends JpaRepository<ChatCustomerService, Long> {
@@ -82,4 +83,8 @@ public interface ChatCustomerServiceRepository extends JpaRepository<ChatCustome
     // Count chats this week
     @Query("SELECT COUNT(c) FROM ChatCustomerService c WHERE WEEK(c.startTime) = WEEK(CURRENT_DATE)")
     Long countThisWeekChats();
+
+    Optional<ChatCustomerService> findByRedisSessionId(String redisSessionId);
+
+    List<ChatCustomerService> findAllByRedisSessionIdIsNotNullOrderByStartTimeDesc();
 }

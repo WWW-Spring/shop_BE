@@ -5,5 +5,7 @@ import java.util.List;
 
 public interface ChatMessageRedisService {
     void saveMessage(ChatMessageDTO message);
-    List<Object> getMessages(Long sessionId);
+    List<ChatMessageDTO> getMessages(Long sessionId);
+    List<String> getAllSessionKeys();
+    void removeSession(Long sessionId);
 }

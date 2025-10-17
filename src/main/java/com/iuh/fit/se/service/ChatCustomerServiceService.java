@@ -16,4 +16,5 @@ public interface ChatCustomerServiceService {
     List<ChatCustomerServiceDTO> getChatSessionsByStaff(Long staffId);
     void updateChatStatus(Long sessionId, ChatStatus status);
     void assignStaffToChat(Long sessionId, Long staffId);
+    List<ChatCustomerServiceDTO> getAllRedisChatSessions();
 }

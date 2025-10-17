@@ -20,13 +20,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class ChatCustomerServiceServiceImpl implements ChatCustomerServiceService {
-    
+
     private final ChatCustomerServiceRepository chatRepository;
     private final UserRepository userRepository;
 
     @Override
     public ChatCustomerServiceDTO createChatSession(ChatCustomerServiceDTO chatDTO) {
         ChatCustomerService chat = convertToEntity(chatDTO);
+        if (chat.getStartTime() == null) {
+            chat.setStartTime(java.time.LocalDateTime.now());
+        }
         ChatCustomerService savedChat = chatRepository.save(chat);
         return convertToDTO(savedChat);
     }
@@ -35,11 +38,14 @@ public class ChatCustomerServiceServiceImpl implements ChatCustomerServiceServic
     public ChatCustomerServiceDTO updateChatSession(Long id, ChatCustomerServiceDTO chatDTO) {
         ChatCustomerService chat = chatRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chat session not found with id: " + id));
-        
+
         chat.setStartTime(chatDTO.getStartTime());
         chat.setEndTime(chatDTO.getEndTime());
         chat.setStatus(chatDTO.getStatus());
-        
+        if (chatDTO.getRedisSessionId() != null) {
+            chat.setRedisSessionId(chatDTO.getRedisSessionId());
+        }
+
         if (chatDTO.getCustomerIds() != null) {
             Set<User> customers = new HashSet<>();
             for (Long userId : chatDTO.getCustomerIds()) {
@@ -49,7 +55,7 @@ public class ChatCustomerServiceServiceImpl implements ChatCustomerServiceServic
             }
             chat.setCustomers(customers);
         }
-        
+
         if (chatDTO.getStaffIds() != null) {
             Set<User> staffs = new HashSet<>();
             for (Long userId : chatDTO.getStaffIds()) {
@@ -59,7 +65,7 @@ public class ChatCustomerServiceServiceImpl implements ChatCustomerServiceServic
             }
             chat.setStaffs(staffs);
         }
-        
+
         ChatCustomerService updatedChat = chatRepository.save(chat);
         return convertToDTO(updatedChat);
     }
@@ -81,6 +87,14 @@ public class ChatCustomerServiceServiceImpl implements ChatCustomerServiceServic
     @Transactional(readOnly = true)
     public List<ChatCustomerServiceDTO> getAllChatSessions() {
         return chatRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ChatCustomerServiceDTO> getAllRedisChatSessions() {
+        return chatRepository.findAllByRedisSessionIdIsNotNullOrderByStartTimeDesc().stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -121,10 +135,10 @@ public class ChatCustomerServiceServiceImpl implements ChatCustomerServiceServic
     public void assignStaffToChat(Long sessionId, Long staffId) {
         ChatCustomerService chat = chatRepository.findById(sessionId)
                 .orElseThrow(() -> new RuntimeException("Chat session not found"));
-        
+
         User staff = userRepository.findById(staffId)
                 .orElseThrow(() -> new RuntimeException("Staff not found"));
-        
+
         if (chat.getStaffs() == null) {
             chat.setStaffs(new HashSet<>());
         }
@@ -138,21 +152,22 @@ public class ChatCustomerServiceServiceImpl implements ChatCustomerServiceServic
         dto.setStartTime(chat.getStartTime());
         dto.setEndTime(chat.getEndTime());
         dto.setStatus(chat.getStatus());
-        
+        dto.setRedisSessionId(chat.getRedisSessionId());
+
         if (chat.getCustomers() != null) {
             Set<Long> customerIds = chat.getCustomers().stream()
                     .map(User::getId)
                     .collect(Collectors.toSet());
             dto.setCustomerIds(customerIds);
         }
-        
+
         if (chat.getStaffs() != null) {
             Set<Long> staffIds = chat.getStaffs().stream()
                     .map(User::getId)
                     .collect(Collectors.toSet());
             dto.setStaffIds(staffIds);
         }
-        
+
         return dto;
     }
 
@@ -161,7 +176,8 @@ public class ChatCustomerServiceServiceImpl implements ChatCustomerServiceServic
         chat.setStartTime(dto.getStartTime());
         chat.setEndTime(dto.getEndTime());
         chat.setStatus(dto.getStatus());
-        
+        chat.setRedisSessionId(dto.getRedisSessionId());
+
         if (dto.getCustomerIds() != null) {
             Set<User> customers = new HashSet<>();
             for (Long userId : dto.getCustomerIds()) {
@@ -171,7 +187,7 @@ public class ChatCustomerServiceServiceImpl implements ChatCustomerServiceServic
             }
             chat.setCustomers(customers);
         }
-        
+
         if (dto.getStaffIds() != null) {
             Set<User> staffs = new HashSet<>();
             for (Long userId : dto.getStaffIds()) {
@@ -181,7 +197,7 @@ public class ChatCustomerServiceServiceImpl implements ChatCustomerServiceServic
             }
             chat.setStaffs(staffs);
         }
-        
+
         return chat;
     }
 }
