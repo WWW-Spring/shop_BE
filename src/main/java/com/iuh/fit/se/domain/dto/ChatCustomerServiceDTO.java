@@ -16,6 +16,7 @@ public class ChatCustomerServiceDTO {
     LocalDateTime startTime;
     LocalDateTime endTime;
     ChatStatus status;
+    String redisSessionId;
     Set<Long> customerIds;
     Set<Long> staffIds;
 }
