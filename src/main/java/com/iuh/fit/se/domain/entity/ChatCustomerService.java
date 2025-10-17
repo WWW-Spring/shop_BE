@@ -45,10 +45,12 @@ public class ChatCustomerService {
     // Nhân viên CSKH tham gia phiên chat này
     @ManyToMany(mappedBy = "asStaffChats")
     private Set<User> staffs ;
-    
+
     // Thông tin khách vãng lai (không có tài khoản)
     String guestName;
     String guestEmail;
     String guestIdentifier; // Session ID, cookie, hoặc device ID để tracking
+    @Column(name = "redis_session_id", unique = true)
+    String redisSessionId; // Khóa phiên chat trong Redis để đồng bộ trạng thái
     Boolean isGuestChat; // true = khách vãng lai, false/null = khách có tài khoản
 }
