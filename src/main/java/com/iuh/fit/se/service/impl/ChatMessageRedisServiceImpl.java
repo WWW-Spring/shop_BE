@@ -2,29 +2,41 @@ package com.iuh.fit.se.service.impl;
 
 import com.iuh.fit.se.domain.dto.ChatMessageDTO;
 import com.iuh.fit.se.service.ChatMessageRedisService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ChatMessageRedisServiceImpl implements ChatMessageRedisService {
 
-    private static final String CHAT_KEY_PREFIX = "chat:session:";
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
-
-    @Override
-    public void saveMessage(Long sessionId, ChatMessageDTO message) {
-        String key = CHAT_KEY_PREFIX + sessionId;
-        redisTemplate.opsForList().rightPush(key, message);
+    private String getKey(Long sessionId) {
+        return "chat:session:" + sessionId;
     }
 
+    // ✅ Lưu tin nhắn vào Redis list
     @Override
-    @SuppressWarnings("unchecked")
-    public List<ChatMessageDTO> getMessages(Long sessionId) {
-        String key = CHAT_KEY_PREFIX + sessionId;
-        return (List<ChatMessageDTO>)(List<?>) redisTemplate.opsForList().range(key, 0, -1);
+    public void saveMessage(ChatMessageDTO message) {
+        try {
+            redisTemplate.opsForList().rightPush(getKey(message.getSessionId()), message);
+            System.out.println("💾 [Redis] Saved message for session " + message.getSessionId());
+        } catch (Exception e) {
+            System.err.println("❌ [Redis] Failed to save message: " + e.getMessage());
+        }
+    }
+
+    // ✅ Lấy toàn bộ lịch sử chat theo sessionId
+    @Override
+    public List<Object> getMessages(Long sessionId) {
+        try {
+            return redisTemplate.opsForList().range(getKey(sessionId), 0, -1);
+        } catch (Exception e) {
+            System.err.println("❌ [Redis] Failed to get messages: " + e.getMessage());
+            return List.of();
+        }
     }
 }
