@@ -8,17 +8,4 @@ import java.util.List;
 
 public interface ProductService {
 
-    // base crud
-    ProductDTO createProduct(ProductDTO productDTO);
-    ProductDTO updateProduct(Long id, ProductDTO productDTO);
-    void deleteProduct(Long id);
-    ProductDTO getProductById(Long id);
-    List<ProductDTO> getAllProducts();
-    List<ProductDTO> getProductsByStatus(ProductStatus status);
-    List<ProductDTO> getProductsByCategory(Long categoryId);
-    List<ProductDTO> searchProductsByName(String name);
-    List<ProductDTO> getProductsByPriceRange(Double minPrice, Double maxPrice);
-    List<ProductDTO> getAvailableProducts();
-    List<ProductDTO> getOutOfStockProducts();
-    void updateProductQuantity(Long productId, Long quantity);
 }
