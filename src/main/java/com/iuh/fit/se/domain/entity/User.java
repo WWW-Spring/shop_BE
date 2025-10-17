@@ -39,6 +39,7 @@ public class User {
     Long id;
     String fullName;
     String password;
+    String confirmPassword;
     String email;
     @Enumerated(EnumType.STRING)
     Gender gender;

@@ -8,6 +8,8 @@ import com.iuh.fit.se.repository.RoleRepository;
 import com.iuh.fit.se.repository.UserRepository;
 import com.iuh.fit.se.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +26,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-        User user = convertToEntity(userDTO);
-        User savedUser = userRepository.save(user);
-        return convertToDTO(savedUser);
+        if(userRepository.existsByEmail(userDTO.getEmail()))
+            throw new RuntimeException("Email already exists");
+        if (!userDTO.getPassword().equals(userDTO.getConfirmPassword()))
+            throw new RuntimeException("Password and confirm password do not match");
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        User user = User.builder()
+                .fullName(userDTO.getFullName())
+                .phoneNumber(userDTO.getPhoneNumber())
+                .password(passwordEncoder.encode(userDTO.getPassword()))
+                .build();
+        userRepository.save(user);
+        return UserDTO.builder()
+                .fullName(user.getFullName())
+                .phoneNumber(user.getPhoneNumber())
+                .build();
     }
 
     @Override
