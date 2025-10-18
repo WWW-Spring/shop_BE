@@ -26,8 +26,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-        if(userRepository.existsByEmail(userDTO.getEmail()))
-            throw new RuntimeException("Email already exists");
         if (!userDTO.getPassword().equals(userDTO.getConfirmPassword()))
             throw new RuntimeException("Password and confirm password do not match");
 
