@@ -1,5 +1,6 @@
 package com.iuh.fit.se.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.iuh.fit.se.domain.enums.Gender;
 import com.iuh.fit.se.domain.enums.UserStatus;
 import lombok.*;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
     Long id;
     String fullName;
