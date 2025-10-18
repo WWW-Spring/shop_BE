@@ -4,6 +4,7 @@ import com.iuh.fit.se.domain.dto.ApiResponse;
 import com.iuh.fit.se.domain.dto.UserDTO;
 import com.iuh.fit.se.domain.enums.UserStatus;
 import com.iuh.fit.se.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ApiResponse<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+    public ApiResponse<UserDTO> createUser(@RequestBody @Valid UserDTO userDTO) {
         UserDTO createdUser = userService.createUser(userDTO);
         return ApiResponse.<UserDTO>builder()
                 .result(createdUser)

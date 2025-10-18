@@ -4,6 +4,8 @@ import com.iuh.fit.se.domain.dto.UserDTO;
 import com.iuh.fit.se.domain.entity.Role;
 import com.iuh.fit.se.domain.entity.User;
 import com.iuh.fit.se.domain.enums.UserStatus;
+import com.iuh.fit.se.exception.AppException;
+import com.iuh.fit.se.exception.ErrorCode;
 import com.iuh.fit.se.repository.RoleRepository;
 import com.iuh.fit.se.repository.UserRepository;
 import com.iuh.fit.se.service.UserService;
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         if (!userDTO.getPassword().equals(userDTO.getConfirmPassword()))
-            throw new RuntimeException("Password and confirm password do not match");
+            throw new AppException(ErrorCode.PASSWORD_MISMATCH);
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user = User.builder()
