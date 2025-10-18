@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO {
     Long id;
     String fullName;

@@ -1,5 +1,6 @@
 package com.iuh.fit.se.controller;
 
+import com.iuh.fit.se.domain.dto.ApiResponse;
 import com.iuh.fit.se.domain.dto.UserDTO;
 import com.iuh.fit.se.domain.enums.UserStatus;
 import com.iuh.fit.se.service.UserService;
@@ -19,9 +20,11 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+    public ApiResponse<UserDTO> createUser(@RequestBody UserDTO userDTO) {
         UserDTO createdUser = userService.createUser(userDTO);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+        return ApiResponse.<UserDTO>builder()
+                .result(createdUser)
+                .build();
     }
 
     @PutMapping("/{id}")
